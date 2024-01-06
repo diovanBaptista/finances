@@ -17,7 +17,7 @@ class InstallmentViewSet(viewsets.ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
     ]
 
-    filterset_fields = ['status']
+    filterset_fields = ['status','accounts']
     search_fields = [
         
     ]

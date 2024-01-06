@@ -62,6 +62,46 @@ class Account(models.Model):
         null=True,blank=True
     )
 
+    @property
+    def pagou(self):
+        pago = 0
+        parcelas = self.installment_set.all()
+        for parcela in parcelas:
+            if parcela.status == 'Pago':
+                pago += parcela.installment_value
+
+        return pago
+
+    @property
+    def falta_pagar(self):
+        falta_pagar = 0
+        parcelas = self.installment_set.all()
+        for parcela in parcelas:
+            if parcela.status == 'Nao Pago':
+                falta_pagar += parcela.installment_value
+
+        return falta_pagar
+    
+    @property
+    def parcelas_paga(self):
+        falta_pagar = 0
+        parcelas = self.installment_set.all()
+        parcelas = parcelas.filter(status="Pago").count()
+        return parcelas
+
+    @property
+    def parcelas_nao_pagas(self):
+        parcelas = self.installment_set.all()
+        parcelas = parcelas.filter(status='Nao Pago').count()
+        return parcelas
+    
+    @property
+    def ultima_parcela(self):
+        parcelas = self.installment_set.all()
+        parcelas = parcelas.last()
+        data = parcelas.maturity
+        return data.strftime('%d / %m / %Y')
+        
 
     def pode_avanca_financeiro(self):
         self.status = 'Parte financeira'
