@@ -7,10 +7,17 @@ from ...models import Installment
 from ..serializers import InstallmentSerializer
 from rest_framework.decorators import action
 from django.db.models import Sum
+from rest_framework.pagination import PageNumberPagination
+
+class InstallmentPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class InstallmentViewSet(viewsets.ModelViewSet):
     queryset = Installment.objects.all()
     serializer_class = InstallmentSerializer
+    pagination_class = (InstallmentPagination)
     permission_classes = []
     # permission_classes = [IsAuthenticated]
 
