@@ -2,7 +2,7 @@ from django.db import models
 from .accounts import Account
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-
+import calendar
 
 
 
@@ -48,16 +48,23 @@ class Installment(models.Model):
             return None
         
 
-    def calculardata_vencimento(self, instance,count):
-        
+    def calculardata_vencimento(self, instance, count):
         if instance:
-           
-            data_compra = f"{self.accounts.date}"
-            dia = instance.due_date_day
-            dia = int(dia)
-            data_compra = datetime.strptime(data_compra, '%Y-%m-%d')
-            data_compra = data_compra.replace(day=dia)
-            data_pagamento = data_compra + relativedelta(months=count)
+            data_compra = self.accounts.date  # já é um DateField, não precisa strptime
+            dia = int(instance.due_date_day)
+
+            # Garante que o dia seja válido para o mês da data original
+            ultimo_dia_mes = calendar.monthrange(data_compra.year, data_compra.month)[1]
+            dia = min(dia, ultimo_dia_mes)
+
+            data_base = data_compra.replace(day=dia)
+            data_pagamento = data_base + relativedelta(months=count)
+
+            # Corrige o dia se o novo mês não tiver o dia desejado
+            ultimo_dia_novo_mes = calendar.monthrange(data_pagamento.year, data_pagamento.month)[1]
+            dia = min(int(instance.due_date_day), ultimo_dia_novo_mes)
+            data_pagamento = data_pagamento.replace(day=dia)
+
             self.maturity = data_pagamento
             self.save()
 

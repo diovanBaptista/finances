@@ -17,7 +17,7 @@ class InstallmentPagination(PageNumberPagination):
 class InstallmentViewSet(viewsets.ModelViewSet):
     queryset = Installment.objects.all()
     serializer_class = InstallmentSerializer
-    pagination_class = (InstallmentPagination)
+    # pagination_class = (InstallmentPagination)
     permission_classes = []
     # permission_classes = [IsAuthenticated]
 
