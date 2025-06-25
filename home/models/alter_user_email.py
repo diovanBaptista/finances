@@ -1,8 +1,9 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
 class AlterUserEmail(models.Model):
+    User = get_user_model()
     """
     A classe AlterUserEmail serve somente para alterar as propriedades de e-mail do usuário.
     Deixamos o campo único e obrigatório, assim não teremos problemas no login do mesmo.

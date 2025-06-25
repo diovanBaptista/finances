@@ -140,10 +140,13 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),         # Token de acesso dura 7 dias
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),       # Opcional: token de refresh dura 30 dias
+    "ROTATE_REFRESH_TOKENS": False,                     # Ou True, se quiser girar os refresh tokens
+    "BLACKLIST_AFTER_ROTATION": False,                  # Ou True, se estiver usando blacklist
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
@@ -155,3 +158,5 @@ DJOSER = {
     },
 }
 
+
+AUTH_USER_MODEL = "home.CustomUser"

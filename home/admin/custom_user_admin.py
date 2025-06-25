@@ -1,18 +1,19 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from import_export.admin import ImportExportModelAdmin
 
 from .profile_inline import ProfileInline
 
-admin.site.unregister(User)
+User = get_user_model()
 
+try:
+    admin.site.unregister(User)
+except admin.sites.NotRegistered:
+    pass
 
 @admin.register(User)
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
-    def get_list_display(self, request):
-        list_display = super().get_list_display(request)
-        id = ("id",)
-        return id + list_display
-
+    list_display = ('id', 'email', 'first_name', 'last_name', 'is_staff')
+    ordering = ('email',)
     inlines = [ProfileInline]
