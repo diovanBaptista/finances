@@ -1,9 +1,9 @@
 from datetime import timedelta
-
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+SITE_URL = "http://localhost:5173/"
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-2_&drsqe_i8ds=mam&3su%=i3*2w$+b9dhb2y&v$7u4wv51@%*'
 
@@ -15,9 +15,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -27,19 +24,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "corsheaders",
-    # app
     'home',
     'accounts',
-    #
-    # Libs
-    # 'advanced_filters',
     'debug_toolbar',
     'django_admin_listfilter_dropdown',
     'django_browser_reload',
     'django_object_actions',
     'django_filters',
-	'drf_spectacular',
-	'drf_spectacular_sidecar',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     'import_export',
     'novadata_utils',
     'rest_framework',
@@ -79,20 +72,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'finance.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -109,10 +94,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -121,14 +102,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -140,23 +114,34 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),         # Token de acesso dura 7 dias
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),       # Opcional: token de refresh dura 30 dias
-    "ROTATE_REFRESH_TOKENS": False,                     # Ou True, se quiser girar os refresh tokens
-    "BLACKLIST_AFTER_ROTATION": False,                  # Ou True, se estiver usando blacklist
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-
 DJOSER = {
-    'LOGIN_FIELD': 'email',
-    'USER_CREATE_PASSWORD_RETYPE': True,
-    'SERIALIZERS': {
-        'user_create': 'djoser.serializers.UserCreateSerializer',
-        'user': 'djoser.serializers.UserSerializer',
-        'current_user': 'djoser.serializers.UserSerializer',
+    "LOGIN_FIELD": "email",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}/",  # só o path!
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "EMAIL": {
+        "password_reset": "accounts.email.CustomPasswordResetEmail",
+    },
+    "SERIALIZERS": {
+        "user_create": "djoser.serializers.UserCreateSerializer",
+        "user": "djoser.serializers.UserSerializer",
+        "current_user": "djoser.serializers.UserSerializer",
     },
 }
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "diovanwinchester2019@gmail.com"
+EMAIL_HOST_PASSWORD = "ljupisjztcrspqik"
+DEFAULT_FROM_EMAIL = "seuemail@gmail.com"
 
 AUTH_USER_MODEL = "home.CustomUser"
