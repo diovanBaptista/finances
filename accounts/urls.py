@@ -16,6 +16,18 @@ accouts_routers.register(
     basename="installments"
 )
 
+accouts_routers.register(
+    "tipo_conta",
+    viewsets.TipoContaViewSet,
+    basename="tipo_conta"
+)
+
+accouts_routers.register(
+    "conta_mensais",
+    viewsets.ContaMensaisViewSet,
+    basename="conta_mensais"
+)
+
 urlpatterns = [
     path('accounts/', include(accouts_routers.urls)),
 ]
