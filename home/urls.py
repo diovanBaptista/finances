@@ -16,7 +16,7 @@ home_router.register(
 )
 
 urlpatterns = [
-    path("home/api/", include(home_router.urls)),
+    path("api/home/", include(home_router.urls)),
     path("", views.home, name="home"),
     path("design_system/", views.design_system, name="design_system"),
     path("svg_viewer/", views.svg_viewer, name="svg_viewer"),

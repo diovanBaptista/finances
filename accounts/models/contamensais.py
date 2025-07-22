@@ -3,6 +3,19 @@ from django.db import models
 
 class ContaMensais(models.Model):
 
+    STATUS_CHOICES = (
+        ('Pago', 'Pago'),
+        ('Nao Pago', 'Nao Pago'),
+    )
+
+    status = models.CharField(
+        verbose_name='Status',
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default='Nao Pago',
+        null=True,blank=True
+    )
+
     conta = models.ForeignKey(
         'accounts.TipoConta',
         on_delete=models.DO_NOTHING,

@@ -24,14 +24,14 @@ class Profile(models.Model):
     @property
     def accounts_month(self):
         mes_atual = datetime.now().month
-        contas = Account.objects.filter(owner=self.id).values_list('id', flat=True)
+        contas = Account.objects.filter(owner=self.usuario_id).values_list('id', flat=True)
         # parcelas = Installment.objects.filter(accounts__in=contas, status='Pago').values_list('installment_value', flat=True)
         parcelas = Installment.objects.filter(
             accounts__in=contas,
                                
         ).values_list('installment_value', flat=True)
 
-        return 'month'
+        return parcelas
 
     def __str__(self):
         return f"{self.usuario}"
