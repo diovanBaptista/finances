@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "corsheaders",
     'home',
+    'entradas',
     'accounts',
     'debug_toolbar',
     'django_admin_listfilter_dropdown',
