@@ -7,6 +7,7 @@ from datetime import datetime
 from accounts.models import Account, Installment, ContaMensais
 from django.db.models import Sum
 from django.db.models.functions import ExtractMonth
+from entradas.models import Entrada
 
 
 
@@ -25,6 +26,12 @@ class ProfileViewSet(NovadataModelViewSet):
         mes_atual = now.month
         ano_atual = now.year
 
+        entradas = Entrada.objects.filter(
+            usuario=2,
+            data__month=mes_atual,
+            data__year=ano_atual
+        )
+
         contas = Account.objects.filter(
             owner_id=2
         )
@@ -34,6 +41,8 @@ class ProfileViewSet(NovadataModelViewSet):
             data__month=mes_atual,
             data__year=ano_atual
         )
+
+        valor_entrada_mensal = entradas.aggregate(total=Sum('valor'))['total'] or 0
 
         # valor total conta mensal
 
@@ -71,29 +80,31 @@ class ProfileViewSet(NovadataModelViewSet):
         return Response({
             'valor_conta_mensal': valor_conta_mensal,
             'valor_conta_mensal_pago': valor_conta_mensal_paga,
-            'valor_conta_mensal_falta_pagar': valor_conta_mensal_falta_pagar
+            'valor_conta_mensal_falta_pagar': valor_conta_mensal_falta_pagar,
+            'valor_entradas_mensal': valor_entrada_mensal,
             })
     
     @action(detail=True, methods=['GET'])
     def grafico_contas(self, request, pk=None):
         ano_atual = datetime.now().year
 
-        contas_mensais = ContaMensais.objects.filter(
+        contas_mensais = Installment.objects.filter(
+            accounts__owner_id=2,
+            accounts__date__year=ano_atual
+        ).annotate(
+            mes=ExtractMonth('maturity')
+        ).values('mes').annotate(
+            total=Sum('installment_value')
+        )
+
+
+        contas_account = ContaMensais.objects.filter(
             owner_id=2,
             data__year=ano_atual
         ).annotate(
             mes=ExtractMonth('data')
         ).values('mes').annotate(
             total=Sum('valor')
-        )
-
-        contas_account = Account.objects.filter(
-            owner_id=2,
-            date__year=ano_atual
-        ).annotate(
-            mes=ExtractMonth('date')
-        ).values('mes').annotate(
-            total=Sum('value')
         )
 
         meses_nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
@@ -109,9 +120,38 @@ class ProfileViewSet(NovadataModelViewSet):
             resultado.append({
                 'mes': meses_nomes[i - 1],
                 'total': total_geral,
-                # 'conta_mensal': total_mensal,
-                # 'conta_account': total_account
+                'conta_mensal': total_mensal,
+                'conta_account': total_account
             })
 
         return Response(resultado)
+        
+    @action(detail=True, methods=['GET'])
+    def grafico_entradas(self, request, pk=None):
+        ano_atual = datetime.now().year
 
+        # Entradas
+        entradas = Entrada.objects.filter(
+            usuario=2,
+            data__year=ano_atual
+        ).annotate(
+            mes=ExtractMonth('data')
+        ).values('mes').annotate(
+            total=Sum('valor')
+        )
+
+
+        meses_nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                       'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+        resultado = []
+        for i in range(1, 13):
+            # Total de entradas
+            total_entradas = next((item['total'] for item in entradas if item['mes'] == i), 0) or 0
+
+            resultado.append({
+                'mes': meses_nomes[i - 1],
+                'entradas': total_entradas,
+            })
+
+        return Response(resultado)
